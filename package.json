@@ -1,0 +1,21 @@
+{
+  "name": "clickup-integration",
+  "version": "1.0.0",
+  "description": "Integração automática ClickUp para Claude via GitHub Actions",
+  "main": "fetch-clickup-data.js",
+  "scripts": {
+    "start": "node fetch-clickup-data.js",
+    "fetch": "node fetch-clickup-data.js"
+  },
+  "keywords": [
+    "clickup",
+    "integration",
+    "automation",
+    "github-actions"
+  ],
+  "author": "Rafael Rosa",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}
