@@ -1,28 +1,33 @@
 {
-  "name": "clickup-automations",
-  "version": "1.0.0",
-  "description": "Sistema de automações para ClickUp - Validação e envio automático",
-  "main": "clickup-automations.js",
+  "name": "clickup-whatsapp-automations",
+  "version": "2.0.0",
+  "description": "Sistema de automações ClickUp com integração WhatsApp - Validação e envio automático",
+  "main": "clickup-whatsapp-automations.js",
   "scripts": {
-    "start": "node clickup-automations.js",
-    "dev": "nodemon clickup-automations.js",
-    "test": "node test-automations.js",
-    "setup-webhook": "node setup-webhook.js"
+    "start": "node clickup-whatsapp-automations.js",
+    "dev": "nodemon clickup-whatsapp-automations.js",
+    "test": "node test-whatsapp-automations.js",
+    "setup-webhook": "node setup-webhook.js",
+    "email-version": "node clickup-automations.js"
   },
   "keywords": [
     "clickup",
+    "whatsapp",
     "automation",
     "webhook",
-    "rafael-rosa"
+    "rafael-rosa",
+    "social-media"
   ],
   "author": "Rafael Rosa Marketing",
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
-    "nodemailer": "^6.9.7",
+    "whatsapp-web.js": "^1.23.0",
+    "qrcode-terminal": "^0.12.0",
     "cors": "^2.8.5",
     "helmet": "^7.1.0",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "puppeteer": "^21.6.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
