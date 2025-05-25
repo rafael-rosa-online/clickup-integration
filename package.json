@@ -1,21 +1,33 @@
 {
-  "name": "clickup-integration",
+  "name": "clickup-automations",
   "version": "1.0.0",
-  "description": "Integração automática ClickUp para Claude via GitHub Actions",
-  "main": "fetch-clickup-data.js",
+  "description": "Sistema de automações para ClickUp - Validação e envio automático",
+  "main": "clickup-automations.js",
   "scripts": {
-    "start": "node fetch-clickup-data.js",
-    "fetch": "node fetch-clickup-data.js"
+    "start": "node clickup-automations.js",
+    "dev": "nodemon clickup-automations.js",
+    "test": "node test-automations.js",
+    "setup-webhook": "node setup-webhook.js"
   },
   "keywords": [
     "clickup",
-    "integration",
     "automation",
-    "github-actions"
+    "webhook",
+    "rafael-rosa"
   ],
-  "author": "Rafael Rosa",
+  "author": "Rafael Rosa Marketing",
   "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "nodemailer": "^6.9.7",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
   "engines": {
-    "node": ">=18"
+    "node": ">=18.0.0"
   }
 }
