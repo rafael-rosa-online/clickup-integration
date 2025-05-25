@@ -1,0 +1,151 @@
+{
+  "timestamp": "2025-05-25T22:12:14.269Z",
+  "last_updated": "25/05/2025, 19:12:14",
+  "stats": {
+    "total_listas_operacional": 4,
+    "total_listas_clientes": 7,
+    "tarefas_social_media": 71,
+    "tarefas_assessoria": 37,
+    "tarefas_trafego": 10,
+    "total_tarefas_ativas": 118
+  },
+  "listas_operacional": [
+    {
+      "id": "901408806028",
+      "name": "Social Media",
+      "task_count": 71,
+      "status": {
+        "status": "#b660e0",
+        "color": "#b660e0",
+        "hide_label": true
+      }
+    },
+    {
+      "id": "901408806038",
+      "name": "Sites",
+      "task_count": 0,
+      "status": {
+        "status": "#b660e0",
+        "color": "#b660e0",
+        "hide_label": true
+      }
+    },
+    {
+      "id": "901408806039",
+      "name": "Assessoria",
+      "task_count": 37,
+      "status": {
+        "status": "#b660e0",
+        "color": "#b660e0",
+        "hide_label": true
+      }
+    },
+    {
+      "id": "901408546989",
+      "name": "Gestão de Tráfego",
+      "task_count": 10,
+      "status": {
+        "status": "#b660e0",
+        "color": "#b660e0",
+        "hide_label": true
+      }
+    }
+  ],
+  "listas_clientes": [
+    {
+      "id": "901408806040",
+      "name": "Futurize",
+      "task_count": 0
+    },
+    {
+      "id": "901408806054",
+      "name": "2TOK",
+      "task_count": 0
+    },
+    {
+      "id": "901408806056",
+      "name": "Celmáquinas",
+      "task_count": 0
+    },
+    {
+      "id": "901408806057",
+      "name": "ABS Baterias",
+      "task_count": 0
+    },
+    {
+      "id": "901408806061",
+      "name": "Estação Zero",
+      "task_count": 0
+    },
+    {
+      "id": "901409067884",
+      "name": "ZOQE",
+      "task_count": 0
+    },
+    {
+      "id": "901409067887",
+      "name": "Cromocil",
+      "task_count": 0
+    }
+  ],
+  "tarefas_recentes": [
+    {
+      "id": "86b542v8t",
+      "name": " -  - ",
+      "status": "planejamento",
+      "assignees": [],
+      "priority": "normal",
+      "due_date": null,
+      "date_created": "1748061215453",
+      "date_updated": "1748061217264"
+    },
+    {
+      "id": "86b542v8m",
+      "name": " -  - ",
+      "status": "planejamento",
+      "assignees": [],
+      "priority": "normal",
+      "due_date": null,
+      "date_created": "1748061186254",
+      "date_updated": "1748061188308"
+    },
+    {
+      "id": "86b542v7j",
+      "name": " -  - ",
+      "status": "planejamento",
+      "assignees": [],
+      "priority": "normal",
+      "due_date": null,
+      "date_created": "1748061108633",
+      "date_updated": "1748061110933"
+    },
+    {
+      "id": "86b542uu5",
+      "name": "{{ $json.codigo }}",
+      "status": "planejamento",
+      "assignees": [],
+      "priority": "normal",
+      "due_date": null,
+      "date_created": "1748060660820",
+      "date_updated": "1748060663015"
+    },
+    {
+      "id": "86b542uqf",
+      "name": "{{ $json.codigo }}",
+      "status": "planejamento",
+      "assignees": [],
+      "priority": "normal",
+      "due_date": null,
+      "date_created": "1748060630411",
+      "date_updated": "1748060632280"
+    }
+  ],
+  "equipe_ativa": {
+    "total_membros": 3,
+    "membros": [
+      "Rafael Rosa",
+      "Vanessa Wernke da Rosa",
+      "Cristoffer Martins"
+    ]
+  }
+}
