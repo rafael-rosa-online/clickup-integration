@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-05-25T21:35:00.000Z",
+  "last_updated": "25/05/2025 18:35:00",
+  "status": "Aguardando primeira execução da GitHub Action...",
+  "stats": {
+    "total_listas_operacional": 0,
+    "total_listas_clientes": 0,
+    "tarefas_social_media": 0,
+    "tarefas_assessoria": 0,
+    "tarefas_trafego": 0,
+    "total_tarefas_ativas": 0
+  }
+}
