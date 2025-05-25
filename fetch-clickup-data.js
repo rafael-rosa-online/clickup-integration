@@ -37,7 +37,7 @@ async function fetchClickUpData() {
         const trafegoResponse = await fetch(`https://api.clickup.com/api/v2/list/901408546989/task?page=0&limit=5`, { headers });
         const trafegoData = await trafegoResponse.json();
         
-        // Resultado consolidado
+        // Resultado consolidado COMPLETO
         const resultado = {
             timestamp: new Date().toISOString(),
             last_updated: new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }),
@@ -56,12 +56,48 @@ async function fetchClickUpData() {
             }
         };
         
-        // Salvar no arquivo JSON
+        // CRIAR RESUMO EXECUTIVO (arquivo pequeno para Claude)
+        const resumoExecutivo = {
+            timestamp: resultado.timestamp,
+            last_updated: resultado.last_updated,
+            stats: resultado.stats,
+            listas_operacional: operacionalData.lists?.map(list => ({
+                id: list.id,
+                name: list.name,
+                task_count: list.task_count || 0,
+                status: list.status
+            })) || [],
+            listas_clientes: clientesData.lists?.map(list => ({
+                id: list.id,
+                name: list.name,
+                task_count: list.task_count || 0
+            })) || [],
+            tarefas_recentes: atividadeData.tasks?.slice(0, 5).map(task => ({
+                id: task.id,
+                name: task.name,
+                status: task.status?.status || 'sem status',
+                assignees: task.assignees?.map(a => a.username) || [],
+                priority: task.priority?.priority || 'normal',
+                due_date: task.due_date,
+                date_created: task.date_created,
+                date_updated: task.date_updated
+            })) || [],
+            equipe_ativa: {
+                total_membros: 3,
+                membros: ['Rafael Rosa', 'Vanessa Wernke da Rosa', 'Cristoffer Martins']
+            }
+        };
+        
+        // Salvar arquivo COMPLETO
         fs.writeFileSync('clickup-data.json', JSON.stringify(resultado, null, 2));
+        
+        // Salvar arquivo RESUMIDO (para Claude)
+        fs.writeFileSync('clickup-summary.json', JSON.stringify(resumoExecutivo, null, 2));
         
         console.log('✅ Dados coletados com sucesso!');
         console.log(`📊 Stats: ${JSON.stringify(resultado.stats, null, 2)}`);
         console.log(`⏰ Última atualização: ${resultado.last_updated}`);
+        console.log(`📄 Arquivos criados: clickup-data.json (${JSON.stringify(resultado).length} chars) e clickup-summary.json (${JSON.stringify(resumoExecutivo).length} chars)`);
         
         return resultado;
         
@@ -77,6 +113,7 @@ async function fetchClickUpData() {
         };
         
         fs.writeFileSync('clickup-data.json', JSON.stringify(errorResult, null, 2));
+        fs.writeFileSync('clickup-summary.json', JSON.stringify(errorResult, null, 2));
         throw error;
     }
 }
