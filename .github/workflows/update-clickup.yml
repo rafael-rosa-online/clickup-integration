@@ -2,13 +2,13 @@ name: Update ClickUp Data
 
 on:
   schedule:
-    # Executa a cada 2 horas (0 */2 * * *)
+    # Executa a cada 2 horas
     - cron: '0 */2 * * *'
   
   # Permite execução manual
   workflow_dispatch:
   
-  # Executa na primeira vez
+  # Executa na primeira vez e sempre que fizer push
   push:
     branches: [ main ]
 
@@ -25,18 +25,47 @@ jobs:
       with:
         node-version: '20'
         
-    - name: Install dependencies
-      run: npm install
-      
+    - name: Install dependencies (if any)
+      run: |
+        if [ -f package.json ]; then
+          npm install
+        else
+          echo "No package.json found, skipping npm install"
+        fi
+        
+    - name: Test Node.js environment
+      run: |
+        echo "Node version: $(node --version)"
+        echo "NPM version: $(npm --version)"
+        echo "Current directory: $(pwd)"
+        echo "Files in directory:"
+        ls -la
+        
     - name: Fetch ClickUp data
-      run: npm run fetch
+      run: node fetch-clickup-data.js
+      
+    - name: Check if data was created
+      run: |
+        if [ -f clickup-data.json ]; then
+          echo "✅ File created successfully"
+          echo "File size: $(stat -c%s clickup-data.json) bytes"
+          echo "File content preview:"
+          head -20 clickup-data.json
+        else
+          echo "❌ File not created"
+          exit 1
+        fi
       
     - name: Commit and push updated data
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add clickup-data.json
-        git diff --staged --quiet || git commit -m "🔄 Atualizar dados ClickUp - $(date '+%Y-%m-%d %H:%M:%S')"
-        git push
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "🔄 Atualizar dados ClickUp - $(date '+%Y-%m-%d %H:%M:%S')"
+          git push
+        fi
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
