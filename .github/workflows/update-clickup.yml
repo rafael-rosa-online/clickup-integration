@@ -54,12 +54,20 @@ jobs:
     - name: Check if data was created
       run: |
         if [ -f clickup-data.json ]; then
-          echo "✅ File created successfully"
+          echo "✅ clickup-data.json created successfully"
           echo "File size: $(stat -c%s clickup-data.json) bytes"
-          echo "File content preview:"
-          head -20 clickup-data.json
         else
-          echo "❌ File not created"
+          echo "❌ clickup-data.json not created"
+          exit 1
+        fi
+        
+        if [ -f clickup-summary.json ]; then
+          echo "✅ clickup-summary.json created successfully"
+          echo "File size: $(stat -c%s clickup-summary.json) bytes"
+          echo "Summary content preview:"
+          head -10 clickup-summary.json
+        else
+          echo "❌ clickup-summary.json not created"
           exit 1
         fi
       
@@ -67,7 +75,7 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add clickup-data.json
+        git add clickup-data.json clickup-summary.json
         if git diff --staged --quiet; then
           echo "No changes to commit"
         else
