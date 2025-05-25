@@ -14,6 +14,7 @@ const headers = {
 
 async function fetchClickUpData() {
     console.log('🚀 Iniciando busca de dados do ClickUp...');
+    console.log('⏰ Executado em:', new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }));
     
     try {
         // 1. Listas do OPERACIONAL
@@ -66,6 +67,16 @@ async function fetchClickUpData() {
         
     } catch (error) {
         console.error('❌ Erro ao buscar dados:', error);
+        
+        // Criar arquivo com erro para debug
+        const errorResult = {
+            timestamp: new Date().toISOString(),
+            last_updated: new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }),
+            error: error.message,
+            status: "ERRO na execução"
+        };
+        
+        fs.writeFileSync('clickup-data.json', JSON.stringify(errorResult, null, 2));
         throw error;
     }
 }
