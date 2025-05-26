@@ -1,0 +1,384 @@
+{
+  "name": "ClickUp to WhatsApp via Evolution API",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "clickup-whatsapp",
+        "options": {}
+      },
+      "id": "webhook-clickup",
+      "name": "ClickUp Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "clickup-whatsapp-automation"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.event }}",
+              "operation": "equal",
+              "value2": "taskStatusUpdated"
+            },
+            {
+              "value1": "={{ $json.task_status.status }}",
+              "operation": "contains",
+              "value2": "aprovação cliente"
+            }
+          ]
+        }
+      },
+      "id": "filter-status-change",
+      "name": "Filter: Status Changed to Approval",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.clickup.com/api/v2/task/{{ $json.task.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "httpHeaderAuth": "clickup-api",
+        "options": {}
+      },
+      "id": "get-task-details",
+      "name": "Get Task Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrair e validar dados da tarefa ClickUp\nconst task = $input.first().json;\n\n// Buscar campos customizados\nfunction findCustomField(fields, names) {\n  if (!fields) return null;\n  return fields.find(field => \n    names.some(name => \n      field.name?.toLowerCase().includes(name.toLowerCase())\n    )\n  );\n}\n\n// Mapear campos\nconst clienteField = findCustomField(task.custom_fields, ['cliente', 'client']);\nconst legendaField = findCustomField(task.custom_fields, ['legenda', 'copy', 'texto']);\nconst tipoField = findCustomField(task.custom_fields, ['tipo de criativo', 'tipo criativo']);\n\n// Validações\nconst errors = [];\n\n// 1. Verificar se tem arquivos\nif (!task.attachments || task.attachments.length === 0) {\n  errors.push('❌ Nenhum arquivo anexado');\n}\n\n// 2. Verificar campo cliente\nif (!clienteField?.value) {\n  errors.push('❌ Campo \"Cliente\" não preenchido');\n}\n\n// 3. Verificar campo legenda\nif (!legendaField?.value) {\n  errors.push('❌ Campo \"Legenda\" não preenchido');\n}\n\n// Mapear cliente para grupo WhatsApp\nconst clienteNome = clienteField?.value;\nconst gruposWhatsApp = {\n  'Rafael Rosa Marketing Online': 'automacao clickup',\n  'Futurize': 'CLIENTE - Futurize',\n  '2TOK': 'PROJETO - 2TOK',\n  'ABS Baterias': 'ABS BATERIAS - Social',\n  'ZOQE': 'ZOQE - Marketing',\n  'Celmáquinas': 'Celmáquinas Marketing',\n  'Cromocil': 'Cromocil - Social',\n  'Estação Zero Eventos': 'Estação Zero'\n};\n\nconst grupoWhatsApp = gruposWhatsApp[clienteNome];\nif (!grupoWhatsApp) {\n  errors.push(`❌ Cliente \"${clienteNome}\" não tem grupo WhatsApp mapeado`);\n}\n\n// Se tem erros, preparar para reverter status\nif (errors.length > 0) {\n  return [{\n    json: {\n      hasErrors: true,\n      errors: errors,\n      taskId: task.id,\n      taskName: task.name\n    }\n  }];\n}\n\n// Se não tem erros, preparar dados para WhatsApp\nconst arquivos = task.attachments.map(att => ({\n  nome: att.title || att.name || 'arquivo',\n  url: att.url,\n  size: att.size\n}));\n\nconst mensagem = `📋 *MATERIAL PARA APROVAÇÃO*\\n\\n` +\n  `🎯 *Projeto:* ${task.name}\\n\\n` +\n  `📂 *Tipo:* ${tipoField?.value || 'Não especificado'}\\n\\n` +\n  `📝 *Legenda/Copy:*\\n${legendaField.value}\\n\\n` +\n  `📎 *Arquivos:* ${arquivos.length} arquivo(s)\\n` +\n  arquivos.map(a => `• ${a.nome}`).join('\\n') + '\\n\\n' +\n  `✅ Por favor, analisem o material e retornem com aprovação ou ajustes.\\n\\n` +\n  `💼 *Equipe Rafael Rosa Marketing*`;\n\nreturn [{\n  json: {\n    hasErrors: false,\n    taskId: task.id,\n    taskName: task.name,\n    cliente: clienteNome,\n    grupoWhatsApp: grupoWhatsApp,\n    mensagem: mensagem,\n    arquivos: arquivos,\n    legenda: legendaField.value,\n    tipo: tipoField?.value\n  }\n}];"
+      },
+      "id": "process-task-data",
+      "name": "Process Task Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.hasErrors }}",
+              "operation": "equal",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "check-errors",
+      "name": "Has Errors?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.clickup.com/api/v2/task/{{ $json.taskId }}/comment",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "comment_text",
+              "value": "🤖 **AUTOMAÇÃO - ERRO DE VALIDAÇÃO**\\n\\n{{ $json.errors.join('\\n') }}\\n\\n⚠️ Corrija os problemas acima e mude o status novamente para \"APROVAÇÃO CLIENTE\"."
+            }
+          ]
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "httpHeaderAuth": "clickup-api",
+        "options": {}
+      },
+      "id": "add-error-comment",
+      "name": "Add Error Comment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1340,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.clickup.com/api/v2/task/{{ $json.taskId }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "em andamento"
+            }
+          ]
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "httpHeaderAuth": "clickup-api",
+        "options": {}
+      },
+      "id": "revert-status",
+      "name": "Revert Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1560,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://evolution-api-rafael-rosa.onrender.com/message/sendText/rafael-rosa-main",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "RafaelRosa2025_API_WhatsApp_Secure_Key"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "{{ $json.grupoWhatsApp }}"
+            },
+            {
+              "name": "text",
+              "value": "{{ $json.mensagem }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "send-whatsapp-message",
+      "name": "Send WhatsApp Message",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1340,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "split-files",
+      "name": "Split Files",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1560,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://evolution-api-rafael-rosa.onrender.com/message/sendMedia/rafael-rosa-main",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "RafaelRosa2025_API_WhatsApp_Secure_Key"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "{{ $('Process Task Data').item.json.grupoWhatsApp }}"
+            },
+            {
+              "name": "media",
+              "value": "{{ $json.url }}"
+            },
+            {
+              "name": "caption",
+              "value": "{{ $json.nome }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "send-whatsapp-file",
+      "name": "Send WhatsApp File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1780,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.clickup.com/api/v2/task/{{ $('Process Task Data').item.json.taskId }}/comment",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "comment_text",
+              "value": "🤖 **MATERIAL ENVIADO AUTOMATICAMENTE**\\n\\n✅ Material enviado para o cliente via WhatsApp\\n📱 Grupo: {{ $('Process Task Data').item.json.grupoWhatsApp }}\\n📅 Data: {{ new Date().toLocaleString('pt-BR') }}\\n📎 Arquivos: {{ $('Process Task Data').item.json.arquivos.length }}\\n\\n⏰ Aguardando aprovação do cliente..."
+            }
+          ]
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "httpHeaderAuth": "clickup-api",
+        "options": {}
+      },
+      "id": "add-success-comment",
+      "name": "Add Success Comment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2000,
+        400
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "ClickUp Webhook": {
+      "main": [
+        [
+          {
+            "node": "Filter: Status Changed to Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter: Status Changed to Approval": {
+      "main": [
+        [
+          {
+            "node": "Get Task Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Task Details": {
+      "main": [
+        [
+          {
+            "node": "Process Task Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Task Data": {
+      "main": [
+        [
+          {
+            "node": "Has Errors?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Errors?": {
+      "main": [
+        [
+          {
+            "node": "Add Error Comment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send WhatsApp Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Error Comment": {
+      "main": [
+        [
+          {
+            "node": "Revert Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp Message": {
+      "main": [
+        [
+          {
+            "node": "Split Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Files": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp File": {
+      "main": [
+        [
+          {
+            "node": "Add Success Comment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "clickup-whatsapp-evolution",
+  "tags": []
+}
