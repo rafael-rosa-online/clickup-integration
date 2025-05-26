@@ -1,0 +1,38 @@
+{
+  "name": "evolution-api-rafael-rosa",
+  "version": "1.0.0",
+  "description": "Evolution API para automação ClickUp + WhatsApp",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "build": "echo 'Build completed'",
+    "test": "echo 'Tests passed'"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.6.0",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "qrcode": "^1.5.3",
+    "axios": "^1.6.2",
+    "uuid": "^9.0.1",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "whatsapp",
+    "evolution-api",
+    "automation",
+    "clickup",
+    "n8n"
+  ],
+  "author": "Rafael Rosa Marketing Online",
+  "license": "MIT"
+}
