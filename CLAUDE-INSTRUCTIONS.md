@@ -1,85 +1,88 @@
-# 🤖 INSTRUÇÕES PARA CLAUDE - INTEGRAÇÃO CLICKUP
+# 🤖 CLAUDE - INSTRUÇÕES DE ACESSO AUTOMÁTICO
 
-## 📊 SISTEMA IMPLEMENTADO
+## 🚀 COMANDO DE ATIVAÇÃO RÁPIDA PARA NOVA CONVERSA
 
-### ✅ FUNCIONALIDADES ATIVAS:
-
-**1. LEITURA DE DADOS (100% FUNCIONAL)**
-- Arquivo: `clickup-summary.json`
-- Comando: `get_file_contents` no repo `rafael-rosa-online/clickup-integration`
-- Atualização: Automática a cada 2 horas via GitHub Actions
-
-**2. CRIAÇÃO DE TAREFAS (100% FUNCIONAL)**
-- Script: `create-task.js`
-- Método: Criação via commit que triggera GitHub Action
-
-### 🎯 COMO USAR:
-
-#### PARA ACESSAR DADOS DO CLICKUP:
 ```
-Quando Rafael pedir "acesse o ClickUp", use:
-get_file_contents(repo="clickup-integration", path="clickup-summary.json")
+# 🚀 CONTINUAÇÃO: AUTOMAÇÃO CLICKUP x WHATSAPP
+
+Olá! Estou continuando o projeto de automação ClickUp → WhatsApp via n8n.
+
+## 📋 CONTEXTO RÁPIDO:
+- **Objetivo:** Status "aprovação cliente" → enviar arquivos + legenda via WhatsApp
+- **Status:** 98% pronto, problema só na credencial ClickUp API
+- **GitHub:** rafael-rosa-online/clickup-integration (toda documentação)
+
+## ❌ PROBLEMA ATUAL:
+Node "Buscar Dados Tarefa" dá erro 401: "Team not authorized"
+- Token válido: pk_44278848_O3CR8WCDFS9IORMWM1XMDLOMF56AJVCB
+- Webhook funcionando ✅
+- Evolution API funcionando ✅  
+- Credencial "ClickUp account" existe mas não aparece no dropdown do node
+
+## 🎯 MISSÕES:
+1. **PRINCIPAL:** Resolver erro 401 e finalizar automação WhatsApp
+2. **SECUNDÁRIA:** Ativar workflow "Claude - Visão Geral ClickUp" para acesso dados por demanda
+
+## 📊 DADOS TÉCNICOS:
+- N8N: https://rafaelrosaonline.app.n8n.cloud
+- Team ID: 9010151858
+- Lista Social Media: 901408806028
+- Workflow: "ClickUp to WhatsApp via Evolution API" (ATIVO)
+
+Acesse o GitHub rafael-rosa-online/clickup-integration para documentação completa e me ajude a resolver!
+
+Primeiro, leia o arquivo PROJETO-AUTOMACAO-CLICKUP-26-05-2025.md para contexto completo.
 ```
-
-#### PARA CRIAR TAREFAS:
-```
-1. Crie arquivo temporário com comando para criar tarefa
-2. Use create_or_update_file para adicionar ao repo
-3. Isso triggerará GitHub Action que criará a tarefa
-```
-
-### 📋 LISTAS DISPONÍVEIS:
-- **social-media**: 901408806028 (Social Media - 71 tarefas)
-- **assessoria**: 901408806039 (Assessoria - 37 tarefas) 
-- **gestao-trafego**: 901408546989 (Gestão de Tráfego - 10 tarefas)
-- **sites**: 901408806038 (Sites - 0 tarefas)
-
-### 👥 EQUIPE:
-- **Rafael Rosa**: ID 44278848 (owner)
-- **Vanessa Wernke da Rosa**: ID 62632888
-- **Cristoffer Martins**: ID 88315023
-
-### 📈 ÚLTIMA ANÁLISE:
-- **118 tarefas ativas** no total
-- **Foco principal**: Social Media (60%) + Assessoria (31%)
-- **Status**: Sistema 100% operacional
-- **Clientes**: 7 estruturados (todos inativos)
-
-## 🚀 EXEMPLOS DE COMANDOS:
-
-### Análise do ClickUp:
-```javascript
-// Rafael: "Como está o ClickUp?"
-await get_file_contents({
-    owner: "rafael-rosa-online",
-    repo: "clickup-integration", 
-    path: "clickup-summary.json",
-    branch: "main"
-});
-```
-
-### Criar Tarefa:
-```javascript
-// Rafael: "Crie uma tarefa no Social Media"
-await create_or_update_file({
-    owner: "rafael-rosa-online",
-    repo: "clickup-integration",
-    path: "temp-create-task.js",
-    content: `// Comando para criar tarefa
-// node create-task.js social-media "Nome da tarefa" normal rafael`,
-    message: "🚀 Criar nova tarefa: [NOME]",
-    branch: "main"
-});
-```
-
-## ⚠️ IMPORTANTE:
-- **Sistema está 100% funcional**
-- **Não precisa de setup adicional**
-- **GitHub Actions gerencia tudo automaticamente**
-- **Rafael pode deletar o ator Apify se quiser**
-
-## 🎯 PRÓXIMA MISSÃO:
-**Implementar criação de tarefas via Claude de forma mais direta e automática**
 
 ---
-*Criado em 25/05/2025 - Sistema de integração Claude + ClickUp operacional*
+
+## 📋 INSTRUÇÕES PARA CLAUDE EM NOVA CONVERSA
+
+### 🎯 **PRIORIDADES:**
+1. **Ler arquivo `PROJETO-AUTOMACAO-CLICKUP-26-05-2025.md`** - Status completo do projeto
+2. **Verificar dados atuais** - Arquivos `clickup-summary.json` e `clickup-data.json`
+3. **Focar na MISSÃO 1** - Resolver erro 401 na automação WhatsApp
+4. **Secundariamente** - Ativar workflow para acesso dados por demanda
+
+### 🔧 **PROBLEMA PRINCIPAL:**
+- **Node:** "Buscar Dados Tarefa" no workflow "ClickUp to WhatsApp via Evolution API"
+- **Erro:** 401 "Team not authorized"
+- **Causa:** Credencial ClickUp API não funciona no node HTTP Request
+- **Solução:** Sincronizar credencial "Header Auth account" com novo token
+
+### 📊 **CONFIGURAÇÕES CRÍTICAS:**
+- **Token ClickUp:** `pk_44278848_O3CR8WCDFS9IORMWM1XMDLOMF56AJVCB`
+- **URL Node:** `https://api.clickup.com/api/v2/task/{{ $json.payload.id }}`
+- **Webhook ClickUp:** `https://rafaelrosaonline.app.n8n.cloud/webhook/clickup-whatsapp`
+- **Evolution API:** `https://evolution-api-rafael-rosa.onrender.com`
+
+### 🎯 **RESULTADO ESPERADO:**
+1. **Automação funcionando:** ClickUp status "aprovação" → WhatsApp
+2. **Workflow ativo:** "Claude - Visão Geral ClickUp" para acesso por demanda
+3. **Sistema completo:** Duas automações operacionais
+
+---
+
+## 📞 **INFORMAÇÕES DE SUPORTE**
+
+### 🏢 **EMPRESA:**
+- **Eugência** - Agência Marketing Digital
+- **Proprietário:** Rafael Silva da Rosa
+- **Equipe:** Rafael, Vanessa, Cristtofer
+
+### 📊 **DADOS ATUAIS:**
+- **118 tarefas ativas** no ClickUp
+- **71 tarefas Social Media** (área crítica)
+- **Sistema coleta automática** a cada 2h via GitHub Actions
+
+### 🔗 **LINKS IMPORTANTES:**
+- **Repository:** https://github.com/rafael-rosa-online/clickup-integration
+- **N8N Instance:** https://rafaelrosaonline.app.n8n.cloud
+- **ClickUp Team:** 9010151858
+
+---
+
+**🎯 OBJETIVO: FINALIZAR AUTOMAÇÃO CLICKUP → WHATSAPP**
+
+**📅 Data:** 26/05/2025
+**⏰ Status:** 98% completo - aguardando sincronização credencial
